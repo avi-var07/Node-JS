@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Realtime Todo</title>
+</head>
+<body>
+
+  <h2>Realtime Todo List</h2>
+
+  <input id="taskInput" type="text" placeholder="Enter task..." />
+  <button onclick="addTodo()">Add</button>
+
+  <ul id="todoList"></ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const taskInput = document.getElementById("taskInput");
+    const list = document.getElementById("todoList");
+
+    socket.on("loadTodos", (todos) => {
+      render(todos);
+    });
+
+    function addTodo() {
+      const task = taskInput.value.trim();
+      if (task !== "") socket.emit("addTodo", task);
+      taskInput.value = "";
+    }
+
+    function render(todos) {
+      list.innerHTML = "";
+      todos.forEach((t, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `${t} <button>Delete</button>`;
+        
+        li.querySelector("button").onclick = () => {
+          socket.emit("deleteTodo", index);
+        };
+
+        list.appendChild(li);
+      });
+    }
+  </script>
+
+</body>
+</html>

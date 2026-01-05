@@ -1,0 +1,9 @@
+const net = require("net");
+const client = net.createConnection({port: 4000}, ()=>{
+    console.log("Connected to Server!");
+    client.write("Hello Server!");
+});
+
+client.on("data", (data)=>{
+    console.log("Client says: ", data.toString());
+});
